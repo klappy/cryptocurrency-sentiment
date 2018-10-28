@@ -1,5 +1,6 @@
 {
   "name": "coingecko-sentiment",
+  "homepage": "https://klappy.github.io/cryptocurrency-sentiment",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
