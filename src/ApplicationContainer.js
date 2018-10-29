@@ -7,7 +7,7 @@ class ApplicationContainer extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      coinIds: [],
+      coinIds: ['ravencoin'],
     }
   };
 

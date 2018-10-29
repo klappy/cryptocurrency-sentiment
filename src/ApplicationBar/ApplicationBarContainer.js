@@ -1,7 +1,7 @@
 import React from 'react';
 import ApplicationBar from './ApplicationBar';
 
-const projectName = 'CoinGecko';
+const projectName = 'CoinGecko Sentiment';
 
 const ApplicationBarContainer = (props) =>
   <ApplicationBar

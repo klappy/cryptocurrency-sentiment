@@ -16,7 +16,7 @@ export const coin = (id) =>
 
 export const coins = () =>
   new Promise((resolve, reject) => {
-    const uri = 'coins/?per_page=500';
+    const uri = 'coins/?per_page=250'; // 250 max
     get(uri)
     .then(data => resolve(data) );
   });

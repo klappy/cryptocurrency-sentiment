@@ -61,6 +61,8 @@ class CoinCard extends React.Component {
       <Line key={dataChart.chartKey} data={dataChart} />
     );
 
+    let title = coinObject.coingecko_rank + '. ' + coinObject.symbol.toUpperCase() + ' - ' + coinObject.name
+
     return (
       <Card className={classes.card}>
         <CardHeader
@@ -78,7 +80,7 @@ class CoinCard extends React.Component {
               <Delete />
             </IconButton>
           }
-          title={coinObject.name}
+          title={title}
           subheader={coinObject.genesis_date}
         />
         <div className={classes.chips}>
