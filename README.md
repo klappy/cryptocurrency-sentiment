@@ -1,6 +1,8 @@
 # Cryptocurrency sentiment
 Charted Metrics from CoinGecko using React.
 
+Select coins from the menu and explore the charted metrics.
+
 Demo: [https://klappy.github.io/cryptocurrency-sentiment]
 
 ## Why?
@@ -36,4 +38,14 @@ As new packages are consumed they will be listed here. I believe in open source 
   - [https://devhints.io/moment]
 - gh-pages:
   - Deployment to host with minimal effort.
-  -  [https://www.npmjs.com/package/gh-pages]
+  - [https://www.npmjs.com/package/gh-pages]
+
+## Contribution
+Feel free to make requests as issues, or feel free to submit a Pull Request. This is a hobby project but will try to govern the PRs to best practices. Some refactoring or clean up may be requested as needed but don't let that prevent you from contributing, even just crazy ideas.
+
+## TODO
+- Add colors to lines on the charts.
+- Improve Display of top level metrics.
+- Add relevant data to Coin menu.
+- Exchange integration to trade from this app.
+- Trading strategies including my favorite from my other open source app: [Constant Value Trading](https://github.com/klappy/cvt-prototype)
