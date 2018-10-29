@@ -19,7 +19,7 @@ import CoinManager from '../CoinManager';
 
 class ApplicationBar extends React.Component {
   state = {
-    open: false,
+    open: true,
   };
 
   handleDrawerOpen = () => {
