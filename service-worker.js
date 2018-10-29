@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/3.6.3/workbox-sw.js");
 
 importScripts(
-  "/cryptocurrency-sentiment/precache-manifest.c6ac433aad321bbb2b54a724d928c3d4.js"
+  "/cryptocurrency-sentiment/precache-manifest.78f415972af03f269cd9acb3a0094c3f.js"
 );
 
 workbox.clientsClaim();

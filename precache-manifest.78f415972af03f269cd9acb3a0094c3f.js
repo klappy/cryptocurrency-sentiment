@@ -4,19 +4,19 @@ self.__precacheManifest = [
     "url": "/cryptocurrency-sentiment/static/js/runtime~main.32055402.js"
   },
   {
-    "revision": "819fdf925a638dd84344",
-    "url": "/cryptocurrency-sentiment/static/js/main.819fdf92.chunk.js"
+    "revision": "ae3fcd46924c4f0dec23",
+    "url": "/cryptocurrency-sentiment/static/js/main.ae3fcd46.chunk.js"
   },
   {
     "revision": "7af6956a013e664344ca",
     "url": "/cryptocurrency-sentiment/static/js/1.7af6956a.chunk.js"
   },
   {
-    "revision": "819fdf925a638dd84344",
+    "revision": "ae3fcd46924c4f0dec23",
     "url": "/cryptocurrency-sentiment/static/css/main.7403b398.chunk.css"
   },
   {
-    "revision": "ad610283ad09a4127c1a0e48f334ab94",
+    "revision": "aca4a11e2deeddd63f5b20f607cfcf03",
     "url": "/cryptocurrency-sentiment/index.html"
   }
 ];
