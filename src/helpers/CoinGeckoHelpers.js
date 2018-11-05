@@ -1,4 +1,4 @@
-const request = require('request-promise');
+const request = require('promise-request-retry');
 
 export const history = (id, date) =>
   new Promise((resolve, reject) => {
@@ -21,7 +21,7 @@ export const coins = () =>
     .then(data => resolve(data) );
   });
 
-const get = (_uri) =>
+const get = (_uri, retryCount=2) =>
   new Promise((resolve, reject) => {
     const uriBase = 'https://api.coingecko.com/api/v3/'
     const uri = uriBase + _uri;
@@ -29,6 +29,7 @@ const get = (_uri) =>
       method: 'GET',
       uri: uri,
       json: true,
+      retry: retryCount,
     };
     request(options)
     .then(data => resolve(data) )
