@@ -2,10 +2,10 @@ import * as coinGeckoHelpers from '../helpers/CoinGeckoHelpers';
 import eachLimit from 'async/eachLimit';
 import moment from 'moment';
 
-export const datasetsCharts = (id, coinObject) =>
+export const datasetsCharts = (id, scale) =>
   new Promise((resolve, reject) => {
     let _datasetsCharts = {};
-    const _backDays = backDays();
+    const _backDays = backDays(scale);
     let histories = {};
     eachLimit(_backDays, 2,
       (backDay, callback) => {
@@ -17,7 +17,7 @@ export const datasetsCharts = (id, coinObject) =>
         });
       },
       () => {
-        _datasetsCharts = datasetsChartsFromHistories(histories);
+        _datasetsCharts = datasetsChartsFromHistories(histories, scale);
         resolve(_datasetsCharts);
       }
     );
@@ -27,8 +27,15 @@ const backDate = (days_ago) => {
   return moment().subtract(days_ago, 'days').format('DD-MM-YYYY');
 }
 
-export const backDays = () => {
-  return [120, 90, 60, 30, 14, 7, 6, 5, 4, 3, 2, 1, 0];
+export const backDays = (scale) => {
+  const base = [...Array(11).keys()].reverse();
+  let backDaysByScale = {
+    days: base,
+    weeks: base.map(week => week * 7),
+    months: [7,6,5,4,3,2,1,0].map(month => month * 30),
+    fibonacci: [144,89,55,34,21,13,8,5,3,2,1,0],
+  }
+  return backDaysByScale[scale];
 }
 
 const dataTypes = () => {
@@ -106,13 +113,25 @@ const dataTypes = () => {
   };
 };
 
-const datasetsChartsFromHistories = (histories) => {
+const colors = () => [
+  'LIMEGREEN',
+  'MEDIUMORCHID',
+  'CRIMSON',
+  'DARKORANGE',
+  'OLIVE',
+  'STEELBLUE',
+  'SANDYBROWN',
+  'DARKTURQUOISE',
+];
+
+const datasetsChartsFromHistories = (histories, scale) => {
   let _datasetsCharts = {};
-  let _backDays = backDays();
+  let _backDays = backDays(scale);
   const _dataTypes = dataTypes();
   Object.keys(_dataTypes).forEach(chartKey => {
     _datasetsCharts[chartKey] = [];
     let datasets = [];
+    let _colors = colors();
     Object.keys(_dataTypes[chartKey]).forEach(lineKey => {
       let data = _backDays.map(backDay => {
         const {unit} = _dataTypes[chartKey][lineKey];
@@ -125,10 +144,17 @@ const datasetsChartsFromHistories = (histories) => {
         if (decimals) fixed = decimals;
         return value.toFixed(fixed);
       });
+      let color = _colors.shift();
       let dataset = {
         label: _dataTypes[chartKey][lineKey].label,
         fill: false,
         data: data,
+        borderColor: color,
+        backgroundColor: color,
+        pointBackgroundColor: color,
+        pointBorderColor: color,
+        pointHoverBackgroundColor: color,
+        pointHoverBorderColor: 'rgba(220,220,220,1)',
       };
       datasets.push(dataset);
     });

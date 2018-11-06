@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import classnames from 'classnames';
-import {Line} from 'react-chartjs-2';
 import ReactMarkdown from 'react-markdown';
 import {
   Card,
@@ -22,44 +21,22 @@ import {
   ExpandMore,
   Delete,
 } from '@material-ui/icons';
-
 import red from '@material-ui/core/colors/red';
-import * as helpers from './helpers';
+
+import CoinCharts from './CoinCharts';
+
 
 class CoinCard extends React.Component {
   state = {
     expanded: false,
-    datasetsCharts: {},
   };
 
   handleExpandClick = () => {
     this.setState(state => ({ expanded: !state.expanded }));
   };
 
-  componentDidMount() {
-    let _this = this;
-    let {id} = this.props.coinObject;
-    helpers.datasetsCharts(id)
-    .then(datasetsCharts => {
-      _this.setState({
-        datasetsCharts: datasetsCharts,
-      });
-    });
-  };
-
   render() {
     const { classes, coinObject, removeCoinId } = this.props;
-
-    const charts = Object.keys(this.state.datasetsCharts)
-    .map(chartKey => {
-      return {
-        chartKey: chartKey,
-        labels: helpers.backDays().map(days => days + 'd'),
-        datasets: this.state.datasetsCharts[chartKey],
-      };
-    }).map(dataChart =>
-      <Line key={dataChart.chartKey} data={dataChart} />
-    );
 
     let title = coinObject.coingecko_rank + '. ' + coinObject.symbol.toUpperCase() + ' - ' + coinObject.name
 
@@ -107,7 +84,7 @@ class CoinCard extends React.Component {
           } />
         </div>
         <CardContent>
-          {charts}
+          <CoinCharts coinObject={coinObject} />
         </CardContent>
         <CardActions className={classes.actions} disableActionSpacing>
           <IconButton aria-label="Add to favorites">
