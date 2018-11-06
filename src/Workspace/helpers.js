@@ -114,14 +114,13 @@ const dataTypes = () => {
 };
 
 const colors = () => [
+  'STEELBLUE',
   'LIMEGREEN',
   'MEDIUMORCHID',
   'CRIMSON',
   'DARKORANGE',
-  'OLIVE',
-  'STEELBLUE',
-  'SANDYBROWN',
   'DARKTURQUOISE',
+  'OLIVE',
 ];
 
 const datasetsChartsFromHistories = (histories, scale) => {
