@@ -13,7 +13,6 @@ import {
   Avatar,
   IconButton,
   Typography,
-
 } from '@material-ui/core';
 import {
   Favorite,
@@ -40,6 +39,27 @@ class CoinCard extends React.Component {
 
     let title = coinObject.coingecko_rank + '. ' + coinObject.symbol.toUpperCase() + ' - ' + coinObject.name
 
+    const data = {
+      market_cap_rank: 'Market Cap Rank',
+      coingecko_rank: 'CoinGecko Rank',
+      coingecko_score: 'CoinGecko Score',
+      developer_score: 'Developer Score',
+      community_score: 'Community Score',
+      liquidity_score: 'Liquidity Score',
+      public_interest_score: 'Public Interest Score',
+    };
+    const chips = (
+      <div className={classes.chips}>
+      {
+        Object.keys(data).map(key =>
+          <Chip className={classes.chip} label={
+            <span>{data[key]}: <b>{coinObject[key].toFixed(2)}</b></span>
+          } />
+        )
+      }
+      </div>
+    );
+
     return (
       <Card className={classes.card}>
         <CardHeader
@@ -60,29 +80,7 @@ class CoinCard extends React.Component {
           title={title}
           subheader={coinObject.genesis_date}
         />
-        <div className={classes.chips}>
-          <Chip className={classes.chip} label={
-            <span>Market Cap Rank: <b>{coinObject.market_cap_rank}</b></span>
-          } />
-          <Chip className={classes.chip} label={
-            <span>CoinGecko Rank: <b>{coinObject.coingecko_rank}</b></span>
-          } />
-          <Chip className={classes.chip} label={
-            <span>CoinGecko Score: <b>{coinObject.coingecko_score.toFixed(2)}</b></span>
-          } />
-          <Chip className={classes.chip} label={
-            <span>Developer Score: <b>{coinObject.developer_score.toFixed(2)}</b></span>
-          } />
-          <Chip className={classes.chip} label={
-            <span>Community Score: <b>{coinObject.community_score.toFixed(2)}</b></span>
-          } />
-          <Chip className={classes.chip} label={
-            <span>Liquidity Score: <b>{coinObject.liquidity_score.toFixed(2)}</b></span>
-          } />
-          <Chip className={classes.chip} label={
-            <span>Public Interest Score: <b>{coinObject.public_interest_score.toFixed(2)}</b></span>
-          } />
-        </div>
+        {chips}
         <CardContent>
           <CoinCharts coinObject={coinObject} />
         </CardContent>

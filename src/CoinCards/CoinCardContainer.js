@@ -2,8 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import CoinCard from './CoinCard';
-import * as helpers from '../helpers/CoinGeckoHelpers';
-import './workspace.css';
+import * as ApplicationHelpers from '../ApplicationHelpers';
 
 class CoinCardContainer extends React.Component {
   constructor(props) {
@@ -16,7 +15,7 @@ class CoinCardContainer extends React.Component {
   componentDidMount() {
     const {coinId} = this.props;
     if (coinId) {
-      helpers.coin(coinId)
+      ApplicationHelpers.coin(coinId)
       .then(data => {
         this.setState({
           coinObject: data

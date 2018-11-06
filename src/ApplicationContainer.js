@@ -3,15 +3,21 @@ import React from 'react';
 import Application from './Application';
 import './Application.css';
 
+import * as ApplicationHelpers from './ApplicationHelpers';
+
 class ApplicationContainer extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      coinIds: ['ravencoin'],
-    }
+  state = {
+    coins: [],
+    coinIds: ['ravencoin'],
   };
 
   componentDidMount() {
+    ApplicationHelpers.coins()
+    .then(data => {
+      this.setState({
+        coins: data
+      });
+    });
   };
 
   addCoinId(coinId) {
@@ -33,6 +39,7 @@ class ApplicationContainer extends React.Component {
   render() {
     return (
       <Application
+        coins={this.state.coins}
         coinIds={this.state.coinIds}
         addCoinId={this.addCoinId.bind(this)}
         removeCoinId={this.removeCoinId.bind(this)}

@@ -38,9 +38,9 @@ export const CoinManager = ({classes, coins, coinIds, addCoinId, removeCoinId}) 
   </div>
 
 CoinManager.propTypes = {
+  classes: PropTypes.object.isRequired,
   coins: PropTypes.array.isRequired,
   coinIds: PropTypes.array.isRequired,
-  classes: PropTypes.object.isRequired,
   addCoinId: PropTypes.func.isRequired,
   removeCoinId: PropTypes.func.isRequired,
 };

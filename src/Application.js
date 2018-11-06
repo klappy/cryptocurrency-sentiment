@@ -7,16 +7,18 @@ import './Application.css';
 import ApplicationBar from './ApplicationBar';
 import Workspace from './Workspace';
 
-export const Application = ({classes, coinIds, addCoinId, removeCoinId}) =>
+export const Application = ({classes, coins, coinIds, addCoinId, removeCoinId}) =>
   <div className={classes.root}>
     <div className={classes.appFrame}>
       <ApplicationBar
+        coins={coins}
         coinIds={coinIds}
         addCoinId={addCoinId}
         removeCoinId={removeCoinId}
       />
       <main className={classes.main}>
         <Workspace
+          coins={coins}
           coinIds={coinIds}
           removeCoinId={removeCoinId}
         />
@@ -26,6 +28,7 @@ export const Application = ({classes, coinIds, addCoinId, removeCoinId}) =>
 
 Application.propTypes = {
   classes: PropTypes.object.isRequired,
+  coins: PropTypes.array.isRequired,
   coinIds: PropTypes.array.isRequired,
   addCoinId: PropTypes.func.isRequired,
   removeCoinId: PropTypes.func.isRequired,

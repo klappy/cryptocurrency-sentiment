@@ -17,87 +17,74 @@ import {
 
 import CoinManager from '../CoinManager';
 
-class ApplicationBar extends React.Component {
-  state = {
-    open: false,
-  };
-
-  handleDrawerOpen = () => {
-    this.setState({ open: true });
-  };
-
-  handleDrawerClose = () => {
-    this.setState({ open: false });
-  };
-
-  render() {
-    const { classes, projectName, coinIds, addCoinId, removeCoinId } = this.props;
-    const { open } = this.state;
-
-    const drawer = (
-      <Drawer
-        variant="persistent"
-        anchor="left"
-        open={open}
-        classes={{
-          paper: classes.drawerPaper,
-        }}
-      >
-        <div className={classes.drawerHeader}>
-          <Typography variant='subheading'>
-            Coins
-          </Typography>
-          <IconButton onClick={this.handleDrawerClose}>
-            <ChevronLeft />
-          </IconButton>
-        </div>
-        <Divider />
-        <CoinManager
-          coinIds={coinIds}
-          addCoinId={addCoinId}
-          removeCoinId={removeCoinId}
-        />
-      </Drawer>
-    );
-
-    return (
-      <div>
-        <AppBar
-          className={classNames(classes.appBar, {
-            [classes.appBarShift]: open,
-            [classes[`appBarShift-left`]]: open,
-          })}
-        >
-          <Toolbar className={classes.toolbar} disableGutters={!open}>
-            <IconButton
-              color="inherit"
-              aria-label="Open drawer"
-              onClick={this.handleDrawerOpen}
-              className={classNames(classes.menuButton, open && classes.hide)}
-            >
-              <Menu />
-            </IconButton>
-            <Typography variant="title" color="inherit" noWrap>
-              {projectName} -<span>&nbsp;</span>
-            </Typography>
-            <Typography variant="subheading" color="inherit" className={classes.coin} noWrap>
-              {coinIds.join(', ')}
-            </Typography>
-          </Toolbar>
-        </AppBar>
-        {drawer}
+const ApplicationBar = ({ classes, projectName, open, handleDrawerOpen, handleDrawerClose, coins, coinIds, addCoinId, removeCoinId }) => {
+  const drawer = (
+    <Drawer
+      variant="persistent"
+      anchor="left"
+      open={open}
+      classes={{
+        paper: classes.drawerPaper,
+      }}
+    >
+      <div className={classes.drawerHeader}>
+        <Typography variant='subheading'>
+          Coins
+        </Typography>
+        <IconButton onClick={handleDrawerClose}>
+          <ChevronLeft />
+        </IconButton>
       </div>
-    );
-  }
+      <Divider />
+      <CoinManager
+        coins={coins}
+        coinIds={coinIds}
+        addCoinId={addCoinId}
+        removeCoinId={removeCoinId}
+      />
+    </Drawer>
+  );
+
+  return (
+    <div>
+      <AppBar
+        className={classNames(classes.appBar, {
+          [classes.appBarShift]: open,
+          [classes[`appBarShift-left`]]: open,
+        })}
+      >
+        <Toolbar className={classes.toolbar} disableGutters={!open}>
+          <IconButton
+            color="inherit"
+            aria-label="Open drawer"
+            onClick={handleDrawerOpen}
+            className={classNames(classes.menuButton, open && classes.hide)}
+          >
+            <Menu />
+          </IconButton>
+          <Typography variant="title" color="inherit" noWrap>
+            {projectName} -<span>&nbsp;</span>
+          </Typography>
+          <Typography variant="subheading" color="inherit" className={classes.coin} noWrap>
+            {coinIds.join(', ')}
+          </Typography>
+        </Toolbar>
+      </AppBar>
+      {drawer}
+    </div>
+  );
 }
 
 ApplicationBar.propTypes = {
   classes: PropTypes.object.isRequired,
   theme: PropTypes.object.isRequired,
   projectName: PropTypes.string.isRequired,
+  coins: PropTypes.array.isRequired,
   coinIds: PropTypes.array.isRequired,
   addCoinId: PropTypes.func.isRequired,
   removeCoinId: PropTypes.func.isRequired,
+  handleDrawerOpen: PropTypes.func.isRequired,
+  handleDrawerClose: PropTypes.func.isRequired,
 };
 
 const drawerWidth = 260;

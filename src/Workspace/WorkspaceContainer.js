@@ -2,13 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import Workspace from './Workspace';
-import './workspace.css';
 
 class WorkspaceContainer extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-    }
+  state = {
+
   };
 
   componentDidMount() {
@@ -25,7 +22,9 @@ class WorkspaceContainer extends React.Component {
 };
 
 WorkspaceContainer.propTypes = {
+  coins: PropTypes.array.isRequired,
   coinIds: PropTypes.array.isRequired,
+  removeCoinId: PropTypes.func.isRequired,
 };
 
 export default WorkspaceContainer;

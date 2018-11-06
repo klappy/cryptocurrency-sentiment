@@ -1,4 +1,4 @@
-import * as coinGeckoHelpers from '../helpers/CoinGeckoHelpers';
+import * as ApplicationHelpers from '../ApplicationHelpers';
 import eachLimit from 'async/eachLimit';
 import moment from 'moment';
 
@@ -10,7 +10,7 @@ export const datasetsCharts = (id, scale) =>
     eachLimit(_backDays, 2,
       (backDay, callback) => {
         let date = backDate(backDay);
-        coinGeckoHelpers.history(id, date)
+        ApplicationHelpers.history(id, date)
         .then(data => {
           histories[backDay] = data;
           callback();

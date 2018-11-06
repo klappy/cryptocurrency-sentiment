@@ -6,15 +6,15 @@ import {
 import {
 } from '@material-ui/icons';
 
-import CoinCards from '../CoinCards';
+import CoinCardContainer from './CoinCardContainer';
 
-export const Workspace = ({classes, coins, coinIds, removeCoinId}) =>
-  <CoinCards coinIds={coinIds} />
+export const CoinCards = ({classes, coinIds, removeCoinId}) =>
+  coinIds.map(coinId =>
+    <CoinCardContainer coinId={coinId} removeCoinId={removeCoinId} />
+  )
 
 
-Workspace.propTypes = {
-  classes: PropTypes.object.isRequired,
-  coins: PropTypes.array.isRequired,
+CoinCards.propTypes = {
   coinIds: PropTypes.array.isRequired,
   removeCoinId: PropTypes.func.isRequired,
 };
@@ -24,4 +24,4 @@ const styles = theme => ({
   },
 });
 
-export default withStyles(styles)(Workspace);
+export default withStyles(styles)(CoinCards);
