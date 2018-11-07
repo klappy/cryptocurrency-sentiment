@@ -10,9 +10,8 @@ import CoinCardContainer from './CoinCardContainer';
 
 export const CoinCards = ({classes, coinIds, removeCoinId}) =>
   coinIds.map(coinId =>
-    <CoinCardContainer coinId={coinId} removeCoinId={removeCoinId} />
-  )
-
+    <CoinCardContainer key={coinId} coinId={coinId} removeCoinId={removeCoinId} />
+  );
 
 CoinCards.propTypes = {
   coinIds: PropTypes.array.isRequired,

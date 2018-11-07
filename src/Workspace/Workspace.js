@@ -9,7 +9,7 @@ import {
 import CoinCards from '../CoinCards';
 
 export const Workspace = ({classes, coins, coinIds, removeCoinId}) =>
-  <CoinCards coinIds={coinIds} />
+  <CoinCards coinIds={coinIds} removeCoinId={removeCoinId} />
 
 
 Workspace.propTypes = {

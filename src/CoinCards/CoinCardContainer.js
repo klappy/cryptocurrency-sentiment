@@ -5,11 +5,13 @@ import CoinCard from './CoinCard';
 import * as ApplicationHelpers from '../ApplicationHelpers';
 
 class CoinCardContainer extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      coinObject: null
-    }
+  state = {
+    expanded: false,
+    coinObject: null,
+  };
+
+  handleExpandClick = () => {
+    this.setState(state => ({ expanded: !state.expanded }));
   };
 
   componentDidMount() {
@@ -29,7 +31,14 @@ class CoinCardContainer extends React.Component {
     let {
       coinObject
     } = this.state;
-    const coinCard = <CoinCard {...props} coinObject={coinObject} />;
+    const coinCard = (
+      <CoinCard
+        {...props}
+        coinObject={coinObject}
+        handleExpandClick={this.handleExpandClick.bind(this)}
+        expanded={this.state.expanded}
+      />
+    );
     const component = this.state.coinObject ? coinCard : <div />
     return component;
   };

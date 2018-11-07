@@ -7,7 +7,7 @@ import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import {Line} from 'react-chartjs-2';
 
-import * as helpers from './helpers';
+import * as CoinCardsHelpers from './CoinCardsHelpers';
 
 class CoinCharts extends React.Component {
   state = {
@@ -27,7 +27,7 @@ class CoinCharts extends React.Component {
   setDataSetsCharts(scale) {
     let _this = this;
     let {id} = this.props.coinObject;
-    helpers.datasetsCharts(id, scale)
+    CoinCardsHelpers.datasetsCharts(id, scale)
     .then(datasetsCharts => {
       _this.setState({
         scale,
@@ -56,7 +56,7 @@ class CoinCharts extends React.Component {
     .map(chartKey => {
       return {
         chartKey: chartKey,
-        labels: helpers.backDays(this.state.scale).map(days => days + 'd'),
+        labels: CoinCardsHelpers.backDays(this.state.scale).map(days => days + 'd'),
         datasets: this.state.datasetsCharts[chartKey],
       };
     }).map(dataChart =>
