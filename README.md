@@ -26,6 +26,9 @@ As new packages are consumed they will be listed here. I believe in open source 
 - Material-UI:
   - Nice React components for UX.
   - [https://material-ui.com/getting-started/installation/]
+- MUI-Datatables:
+  - Quick and Easy dynamic tables with Material-UI.
+  - [https://github.com/gregnb/mui-datatables]
 - React Chartjs 2:
   - Simple charts to visualize metrics with little effort.
   - [https://www.npmjs.com/package/react-chartjs-2]
