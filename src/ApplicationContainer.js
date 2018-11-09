@@ -8,7 +8,7 @@ import * as ApplicationHelpers from './ApplicationHelpers';
 class ApplicationContainer extends React.Component {
   state = {
     coins: [],
-    coinIds: ['ravencoin'],
+    coinIds: [],
   };
 
   componentDidMount() {

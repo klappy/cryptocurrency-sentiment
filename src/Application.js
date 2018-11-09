@@ -20,6 +20,7 @@ export const Application = ({classes, coins, coinIds, addCoinId, removeCoinId}) 
         <Workspace
           coins={coins}
           coinIds={coinIds}
+          addCoinId={addCoinId}
           removeCoinId={removeCoinId}
         />
       </main>
