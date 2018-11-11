@@ -1,13 +1,13 @@
 {
-  "main.css": "/cryptocurrency-sentiment/static/css/main.39b352c1.chunk.css",
-  "main.js": "/cryptocurrency-sentiment/static/js/main.c5da5232.chunk.js",
-  "main.js.map": "/cryptocurrency-sentiment/static/js/main.c5da5232.chunk.js.map",
-  "static/js/1.578c1633.chunk.js": "/cryptocurrency-sentiment/static/js/1.578c1633.chunk.js",
-  "static/js/1.578c1633.chunk.js.map": "/cryptocurrency-sentiment/static/js/1.578c1633.chunk.js.map",
+  "main.css": "/cryptocurrency-sentiment/static/css/main.667315ad.chunk.css",
+  "main.js": "/cryptocurrency-sentiment/static/js/main.7b65463e.chunk.js",
+  "main.js.map": "/cryptocurrency-sentiment/static/js/main.7b65463e.chunk.js.map",
+  "static/js/1.8d3f7791.chunk.js": "/cryptocurrency-sentiment/static/js/1.8d3f7791.chunk.js",
+  "static/js/1.8d3f7791.chunk.js.map": "/cryptocurrency-sentiment/static/js/1.8d3f7791.chunk.js.map",
   "runtime~main.js": "/cryptocurrency-sentiment/static/js/runtime~main.32055402.js",
   "runtime~main.js.map": "/cryptocurrency-sentiment/static/js/runtime~main.32055402.js.map",
-  "static/css/main.39b352c1.chunk.css.map": "/cryptocurrency-sentiment/static/css/main.39b352c1.chunk.css.map",
+  "static/css/main.667315ad.chunk.css.map": "/cryptocurrency-sentiment/static/css/main.667315ad.chunk.css.map",
   "index.html": "/cryptocurrency-sentiment/index.html",
-  "precache-manifest.60d5fe80843fc53171cf88f4af2944ea.js": "/cryptocurrency-sentiment/precache-manifest.60d5fe80843fc53171cf88f4af2944ea.js",
+  "precache-manifest.62ed9163c6d876adc647899d8599337e.js": "/cryptocurrency-sentiment/precache-manifest.62ed9163c6d876adc647899d8599337e.js",
   "service-worker.js": "/cryptocurrency-sentiment/service-worker.js"
 }
