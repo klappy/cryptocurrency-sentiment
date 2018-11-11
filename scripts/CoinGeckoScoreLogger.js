@@ -8,6 +8,8 @@ var mapLimit = require('async/eachLimit');
 
 var helpers = require('../src/ApplicationHelpers');
 
+const basePath = path.join(__dirname, '..', 'public', 'api', 'v1');
+
 const dataKeys = {
   market_cap_rank: 'Market Cap Rank',
   coingecko_rank: 'CoinGecko Rank',
@@ -24,52 +26,47 @@ const dataKeys = {
 // also update the latest
 // /coins/{symbol}.json
 
-const writeFileFromData = (name, data) => {
-  return new Promise((resolve, reject) => {
-    const basePath = path.join(__dirname, '..', 'src', 'data', 'api', 'v1');
-    const date = moment().format('YYYY-MM-DD');
-    const filenameDate = date + '.json';
-    const filepathDate = path.join(basePath, name, filenameDate);
-    const filenameLatest = name + '.json';
-    const filepathLatest = path.join(basePath, filenameLatest);
-    const fileContents = JSON.stringify(data, null, 2);
-    mkdirp(path.join(basePath, name), (error) => {
-      if (error) console.log(error);
-      fs.writeFile(filepathDate, fileContents, 'utf8', (_error) => {
-        if (_error) console.log(_error);
-        fs.writeFile(filepathLatest, fileContents, 'utf8', (__error) => {
-          if (__error) console.log(__error);
-          resolve();
-        });
+const writeFileFromData = (name, data) => new Promise((resolve, reject) => {
+  const date = moment().format('YYYY-MM-DD');
+  const filenameDate = date + '.json';
+  const filepathDate = path.join(basePath, name, filenameDate);
+  const filenameLatest = name + '.json';
+  const filepathLatest = path.join(basePath, filenameLatest);
+  const fileContents = JSON.stringify(data, null, 2);
+  mkdirp(path.join(basePath, name), (error) => {
+    if (error) console.log(error);
+    fs.writeFile(filepathDate, fileContents, 'utf8', (_error) => {
+      if (_error) console.log(_error);
+      fs.writeFile(filepathLatest, fileContents, 'utf8', (__error) => {
+        if (__error) console.log(__error);
+        resolve();
       });
     });
   });
-};
+});
 
-const fetchCoin = (coin) => {
-  return new Promise((resolve, reject) => {
-    const options = {
-      localization: false,
-      tickers: false,
-      market_data: false,
-      community_data: false,
-      developer_data: false,
-    }
-    helpers.coin(coin.id, options).then(coinObject => {
-      let data = {
-        id: coinObject.id,
-        symbol: coinObject.symbol,
-        name: coinObject.name,
-      };
-      Object.keys(dataKeys).forEach(key => {
-        data[key] = coinObject[key];
-      });
-      resolve(data);
+const fetchCoin = (coin) => new Promise((resolve, reject) => {
+  const options = {
+    localization: false,
+    tickers: false,
+    market_data: false,
+    community_data: false,
+    developer_data: false,
+  }
+  helpers.coin(coin.id, options).then(coinObject => {
+    let data = {
+      id: coinObject.id,
+      symbol: coinObject.symbol,
+      name: coinObject.name,
+    };
+    Object.keys(dataKeys).forEach(key => {
+      data[key] = coinObject[key];
     });
+    resolve(data);
   });
-};
+});
 
-const fetchAllScores = (max=4000, limit=8) => {
+const fetchAllScores = (max=4000, limit=8) => new Promise((resolve, reject) => {
   console.time('fetchAllScores()');
   const start = new Date().getTime();
   helpers.coinList().then(coins => {
@@ -113,12 +110,30 @@ const fetchAllScores = (max=4000, limit=8) => {
             writeFileFromData('top250', top250).then(()=>{
               console.log(completed + ' coins updated!');
               console.timeEnd('fetchAllScores()');
+              resolve();
             });
           });
         });
       }
     );
   });
-}
+});
 
-fetchAllScores();
+const fetchAvailableDates = (type='array') => new Promise((resolve, reject) => {
+  const objectPath = path.join(basePath, type);
+  fs.readdir(objectPath, (error, filenames) => {
+    const dates = filenames.filter(filename => filename.match('.json'))
+    .map(filename => filename.replace('.json',''));
+    const datesString = JSON.stringify(dates, null, 2);
+    const datesFilePath = path.join(basePath, 'available-dates.json');
+    fs.writeFile(datesFilePath, datesString, 'utf8', (_error) => {
+      if (_error) console.log(_error);
+      console.log(datesString);
+      resolve();
+    });
+  });
+});
+
+fetchAllScores().then(()=> {
+  fetchAvailableDates();
+});

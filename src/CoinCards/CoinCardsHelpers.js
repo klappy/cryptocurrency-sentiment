@@ -1,5 +1,5 @@
 import * as ApplicationHelpers from '../ApplicationHelpers';
-import eachLimit from 'async/eachLimit';
+import {eachLimit} from 'async';
 import moment from 'moment';
 
 export const datasetsCharts = (id, scale) =>

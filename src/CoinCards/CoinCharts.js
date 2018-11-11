@@ -7,11 +7,12 @@ import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import {Line} from 'react-chartjs-2';
 
+import SelectDropDown from '../SelectDropDown';
+
 import * as CoinCardsHelpers from './CoinCardsHelpers';
 
 class CoinCharts extends React.Component {
   state = {
-    open: false,
     scale: 'days',
     datasetsCharts: {},
   };
@@ -36,19 +37,6 @@ class CoinCharts extends React.Component {
     });
   }
 
-  handleChange = event => {
-    // this.setState({ [event.target.name]: event.target.value });
-    this.setScale(event.target.value);
-  };
-
-  handleClose = () => {
-    this.setState({ open: false });
-  };
-
-  handleOpen = () => {
-    this.setState({ open: true });
-  };
-
   render() {
     const { classes } = this.props;
 
@@ -63,31 +51,20 @@ class CoinCharts extends React.Component {
       <Line key={dataChart.chartKey} data={dataChart} />
     );
 
+    const options = {
+      fibonacci: 'Fibonacci',
+      days: 'Days',
+      weeks: 'Weeks',
+      months: 'Months',
+    };
+
     return (
       <div>
-        <form autoComplete="off">
-          <FormControl className={classes.formControl}>
-            <InputLabel htmlFor="scale-controlled-open-select">
-              Scale
-            </InputLabel>
-            <Select
-              open={this.state.open}
-              onClose={this.handleClose}
-              onOpen={this.handleOpen}
-              value={this.state.scale}
-              onChange={this.handleChange}
-              inputProps={{
-                name: 'scale',
-                id: 'scale-controlled-open-select',
-              }}
-            >
-              <MenuItem value='fibonacci'>Fibonacci</MenuItem>
-              <MenuItem value='days'>Days</MenuItem>
-              <MenuItem value='weeks'>Weeks</MenuItem>
-              <MenuItem value='months'>Months</MenuItem>
-            </Select>
-          </FormControl>
-        </form>
+        <SelectDropDown
+          label='Scale'
+          options={options}
+          onSelect={this.setScale.bind(this)}
+        />
         {charts}
       </div>
     );

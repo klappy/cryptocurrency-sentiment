@@ -32,17 +32,16 @@ module.exports = {
     }),
 }
 
-const get = (_uri, retryCount=4) =>
-  new Promise((resolve, reject) => {
-    const uriBase = 'https://api.coingecko.com/api/v3/'
-    const uri = uriBase + _uri;
-    const options = {
-      method: 'GET',
-      uri: uri,
-      json: true,
-      retry: retryCount,
-    };
-    request(options)
-    .then(data => resolve(data) )
-    .catch(error => reject(error) );
-  });
+const get = (_uri, retryCount=4) => new Promise((resolve, reject) => {
+  const uriBase = 'https://api.coingecko.com/api/v3/'
+  const uri = uriBase + _uri;
+  const options = {
+    method: 'GET',
+    uri: uri,
+    json: true,
+    retry: retryCount,
+  };
+  request(options)
+  .then(data => resolve(data) )
+  .catch(error => reject(error) );
+});
