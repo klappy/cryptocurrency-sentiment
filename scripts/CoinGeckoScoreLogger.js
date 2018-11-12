@@ -34,11 +34,11 @@ const writeFileFromData = (name, data) => new Promise((resolve, reject) => {
   const filepathLatest = path.join(basePath, filenameLatest);
   const fileContents = JSON.stringify(data, null, 2);
   mkdirp(path.join(basePath, name), (error) => {
-    if (error) console.log(error);
+    if (error) {console.log(error); reject(error);}
     fs.writeFile(filepathDate, fileContents, 'utf8', (_error) => {
-      if (_error) console.log(_error);
+      if (_error) {console.log(_error); reject(_error);}
       fs.writeFile(filepathLatest, fileContents, 'utf8', (__error) => {
-        if (__error) console.log(__error);
+        if (__error) {console.log(__error); reject(__error);}
         resolve();
       });
     });
@@ -63,7 +63,7 @@ const fetchCoin = (coin) => new Promise((resolve, reject) => {
       data[key] = coinObject[key];
     });
     resolve(data);
-  });
+  }).catch((error) => {console.log(error); reject(error)});
 });
 
 const fetchAllScores = (max=4000, limit=8) => new Promise((resolve, reject) => {
@@ -75,6 +75,7 @@ const fetchAllScores = (max=4000, limit=8) => new Promise((resolve, reject) => {
     let coinsArray = [];
     let top250 = [];
     let completed = 0;
+    let coinsWithErrors = [];
     mapLimit(coins.splice(0, total), limit,
       (coin, done) => {
         const beforeFetchTime = new Date().getTime();
@@ -102,18 +103,30 @@ const fetchAllScores = (max=4000, limit=8) => new Promise((resolve, reject) => {
             );
             done(null, data);
           }, msDelay);
+        }).catch((error) => {
+          coinsWithErrors.push(coin.id);
+          console.log(error); reject(error)
         });
       },
       (error, results) => {
-        writeFileFromData('object', coinsObject).then(()=>{
-          writeFileFromData('array', coinsArray).then(()=>{
-            writeFileFromData('top250', top250).then(()=>{
-              console.log(completed + ' coins updated!');
-              console.timeEnd('fetchAllScores()');
-              resolve();
-            });
-          });
-        });
+        if (error) {
+          console.log(error); reject(error);
+        } else {
+          if (coinsWithErrors.length === 0) {
+            writeFileFromData('object', coinsObject).then(()=>{
+              writeFileFromData('array', coinsArray).then(()=>{
+                writeFileFromData('top250', top250).then(()=>{
+                  console.log(completed + ' coins updated!');
+                  console.timeEnd('fetchAllScores()');
+                  resolve();
+                }).catch((error) => {console.log(error); reject(error)});
+              }).catch((error) => {console.log(error); reject(error)});
+            }).catch((error) => {console.log(error); reject(error)});
+          } else {
+            console.log(coinsWithErrors);
+            reject('Fetching coins had errors and had to stop.')
+          }
+        }
       }
     );
   });
@@ -122,12 +135,13 @@ const fetchAllScores = (max=4000, limit=8) => new Promise((resolve, reject) => {
 const fetchAvailableDates = (type='array') => new Promise((resolve, reject) => {
   const objectPath = path.join(basePath, type);
   fs.readdir(objectPath, (error, filenames) => {
+    if (error) {console.log(error); reject(error);}
     const dates = filenames.filter(filename => filename.match('.json'))
     .map(filename => filename.replace('.json',''));
     const datesString = JSON.stringify(dates, null, 2);
     const datesFilePath = path.join(basePath, 'available-dates.json');
     fs.writeFile(datesFilePath, datesString, 'utf8', (_error) => {
-      if (_error) console.log(_error);
+      if (_error) {console.log(_error); reject(_error);}
       console.log(datesString);
       resolve();
     });
