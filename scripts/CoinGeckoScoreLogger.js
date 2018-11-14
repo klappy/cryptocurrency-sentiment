@@ -105,7 +105,8 @@ const fetchAllScores = (max=4000, limit=8) => new Promise((resolve, reject) => {
           }, msDelay);
         }).catch((error) => {
           coinsWithErrors.push(coin.id);
-          console.log(error); reject(error)
+          console.log(error);
+          done(null, {});
         });
       },
       (error, results) => {
