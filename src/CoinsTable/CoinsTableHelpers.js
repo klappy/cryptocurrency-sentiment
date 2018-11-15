@@ -23,33 +23,11 @@ export const availableDates = () => new Promise((resolve, reject) => {
   resolve(dates);
 });
 
-export const uriFromDate = (date) => {
-  return href + path.join(baseUri, 'history', date, 'coins' );
-}
-
-export const uriExists = (uri) => new Promise((resolve) => {
-  request({uri: uri, method: 'HEAD', resolveWithFullResponse: true})
-  .then((response) => resolve(true) )
-  .catch((error) => resolve(false) );
-});
-
-export const modifyCoinData = (coin) => {
-  let coinData = Object.keys(columnData).map(columnKey => {
-    let value = '';
-    if (coin[columnKey]) value = coin[columnKey];
-    if (columnKey === 'coin')
-      value = coin['coingecko_rank'] + '. ' +
-        coin['symbol'].toUpperCase() + ': ' + coin['name'];
-    return  value || 0;
-  });
-  return coinData;
-}
-
 export const coinTableDataByDate = (date) => new Promise((resolve, reject) => {
   const columns = Object.keys(columnData).map(columnKey => columnData[columnKey]);
   getDataByDate(date, 'array').then(coinArray => {
     const data = coinArray.map((coin, index) => {
-      return modifyCoinData(coin);
+      return filterCoinData(coin);
     });
     resolve({ columns: columns, data: data, coins: coinArray });
   });
@@ -67,49 +45,17 @@ const columnData = {
   public_interest_score: 'SearchEngine',
 };
 
-const deltaFields = [
-  'coingecko_rank',
-  'market_cap_rank',
-  'coingecko_score',
-  'developer_score',
-  'community_score',
-  'liquidity_score',
-  'public_interest_score',
-];
-
-
-const getDataByDates = () => new Promise((resolve, reject) => {
-  let dataByDates = {};
-  availableDates('object').then(dates => {
-    each(dates,
-      (date, done) => {
-        getDataByDate(date, 'object').then(data => {
-          dataByDates[date] = data;
-          done();
-        });
-      },
-      (error) => {
-        if (error) console.log(error);
-        resolve(dataByDates);
-      }
-    );
+const filterCoinData = (coin) => {
+  let coinData = Object.keys(columnData).map(columnKey => {
+    let value = '';
+    if (coin[columnKey]) value = coin[columnKey];
+    if (columnKey === 'coin')
+      value = coin['coingecko_rank'] + '. ' +
+        coin['symbol'].toUpperCase() + ': ' + coin['name'];
+    return  value || 0;
   });
-});
-
-// export const delta = () => {
-//   const columnData = columnData;
-//   const columns = Object.keys(columnData).map(columnKey => columnData[columnKey]);
-//   const dataByDates = _dataByDates();
-//   Object.keys(dataByDates).forEach(date => {
-//     const dataByDate = dataByDates[date];
-//
-//   });
-//   const data = coins.map((coin, index) => {
-//
-//     return coinData;
-//   });
-//   return { columns: columns, data: data };
-// };
+  return coinData;
+}
 
 const getDataByDate = (date) => new Promise((resolve, reject) => {
   let coinsUri = 'coins';
@@ -117,6 +63,16 @@ const getDataByDate = (date) => new Promise((resolve, reject) => {
   get(coinsUri).then(data => {
     resolve(data);
   });
+});
+
+const uriFromDate = (date) => {
+  return href + path.join(baseUri, 'history', date, 'coins' );
+}
+
+const uriExists = (uri) => new Promise((resolve) => {
+  request({uri: uri, method: 'HEAD', resolveWithFullResponse: true})
+  .then((response) => resolve(true) )
+  .catch((error) => resolve(false) );
 });
 
 const get = (_uri) => new Promise((resolve, reject) => {
