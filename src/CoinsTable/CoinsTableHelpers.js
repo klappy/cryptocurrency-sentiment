@@ -1,14 +1,36 @@
 import path from 'path';
+import moment from 'moment';
 import {each} from 'async';
 const request = require('request-promise');
 
-const baseUri = window.location.href + 'api/v1/';
+const href = 'http://d28x6bs9o8a1xt.cloudfront.net/';
+const baseUri = 'api/v1/';
 
 export const availableDates = () => new Promise((resolve, reject) => {
-  const datesUri = 'available-dates.json';
-  get(datesUri).then(dates => {
-    resolve(dates);
-  });
+  let dates = [];
+  const days = [0,1];
+  each(days,
+    (day, done) => {
+      const date = moment().subtract(day, 'days').format('YYYY-MM-DD');
+      uriExists(uriFromDate(date))
+      .then((exists) => {
+        if (exists) dates.push(date);
+        done();
+      });
+    },
+    (error) => { console.log(error); reject(error); }
+  );
+  resolve(dates);
+});
+
+export const uriFromDate = (date) => {
+  return href + path.join(baseUri, 'history', date, 'coins' );
+}
+
+export const uriExists = (uri) => new Promise((resolve) => {
+  request({uri: uri, method: 'HEAD', resolveWithFullResponse: true})
+  .then((response) => resolve(true) )
+  .catch((error) => resolve(false) );
 });
 
 export const modifyCoinData = (coin) => {
@@ -89,16 +111,16 @@ const getDataByDates = () => new Promise((resolve, reject) => {
 //   return { columns: columns, data: data };
 // };
 
-const getDataByDate = (date, type) => new Promise((resolve, reject) => {
-  let filepath = type + '.json';
-  if (date) filepath = path.join(type, date + '.json');
-  get(filepath).then(data => {
+const getDataByDate = (date) => new Promise((resolve, reject) => {
+  let coinsUri = 'coins';
+  if (date) coinsUri = path.join('history', date, 'coins');
+  get(coinsUri).then(data => {
     resolve(data);
   });
 });
 
 const get = (_uri) => new Promise((resolve, reject) => {
-  const uri = baseUri + _uri;
+  const uri = href + baseUri + _uri;
   const options = {
     method: 'GET',
     uri: uri,
