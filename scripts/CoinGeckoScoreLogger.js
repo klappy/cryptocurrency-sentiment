@@ -1,14 +1,24 @@
 #!/usr/bin/env node
 
-var fs = require('fs');
 var path = require('path');
-var mkdirp = require('mkdirp');
 var moment = require('moment');
-var mapLimit = require('async/eachLimit');
+var eachLimit = require('async/eachLimit');
 
 var helpers = require('../src/ApplicationHelpers');
 
-const basePath = path.join(__dirname, '..', 'public', 'api', 'v1');
+const AWS = require('aws-sdk');
+const s3Keys = {
+  accessKeyId: 'AKIAJU44PKAMK6ER4SZA',
+  secretAccessKey: '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',
+};
+const s3 = new AWS.S3({
+  // accessKeyId: process.env.AWS_ACCESS_KEY,
+  accessKeyId: s3Keys.accessKeyId,
+  // secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  secretAccessKey: s3Keys.secretAccessKey,
+});
+const baseDir = 'api/v1/';
+
 
 const dataKeys = {
   market_cap_rank: 'Market Cap Rank',
@@ -21,28 +31,44 @@ const dataKeys = {
   last_updated: "Timestamp",
 };
 
-//  REST API via fs =>
-// /api/v1/coins/{symbol}/{YYYY-MM-DD}.json
-// also update the latest
-// /coins/{symbol}.json
+// REST API via fs =>
+// # update the latest
+// => /api/v1/coins/{id}
+// # log data to the history of the coin
+// => /api/v1/coins/{id}/history/{YYYY-MM-DD}
+// # aggregate all coin data for today
+// => /api/v1/coins
+// # log data to the history of all coins
+// => /api/v1/coins/history/{YYYY-MM-DD}
 
-const writeFileFromData = (name, data) => new Promise((resolve, reject) => {
+const s3upload = (filepath, fileContents) => new Promise((resolve, reject) => {
+  s3.putObject(
+    {
+      Bucket: 'coingecko-scores',
+      Key: filepath,
+      Body: JSON.stringify(fileContents, null, 2),
+      ContentType: "application/json",
+      ACL: "public-read",
+    },
+    (error, data) => {
+      if (error) {console.error(error); reject(error);}
+      if (data) console.log(data, filepath);
+      resolve();
+    }
+  );
+});
+
+const uploadDataFiles = (resourcePath, filedata) => new Promise((resolve, reject) => {
   const date = moment().format('YYYY-MM-DD');
-  const filenameDate = date + '.json';
-  const filepathDate = path.join(basePath, name, filenameDate);
-  const filenameLatest = name + '.json';
-  const filepathLatest = path.join(basePath, filenameLatest);
-  const fileContents = JSON.stringify(data, null, 2);
-  mkdirp(path.join(basePath, name), (error) => {
-    if (error) {console.log(error); reject(error);}
-    fs.writeFile(filepathDate, fileContents, 'utf8', (_error) => {
-      if (_error) {console.log(_error); reject(_error);}
-      fs.writeFile(filepathLatest, fileContents, 'utf8', (__error) => {
-        if (__error) {console.log(__error); reject(__error);}
-        resolve();
-      });
-    });
-  });
+  const dateFilepath = path.join(baseDir, 'history', date, resourcePath);
+  const latestFilepath = path.join(baseDir, resourcePath);
+  s3upload(dateFilepath, filedata)
+  .then(response => {
+    s3upload(latestFilepath, filedata)
+    .then(_response => resolve())
+    .catch(_error => reject(_error));
+  })
+  .catch(error => reject(error));
 });
 
 const fetchCoin = (coin) => new Promise((resolve, reject) => {
@@ -63,68 +89,62 @@ const fetchCoin = (coin) => new Promise((resolve, reject) => {
       data[key] = coinObject[key];
     });
     resolve(data);
-  }).catch((error) => {console.log(error); reject(error)});
+  }).catch((error) => {console.error(error); reject(error)});
 });
 
-const fetchAllScores = (max=4000, limit=8) => new Promise((resolve, reject) => {
+const fetchAllScores = (max=4000, limit=10) => new Promise((resolve, reject) => {
+  const msMinimumTime = 1000/10*limit;
   console.time('fetchAllScores()');
   const start = new Date().getTime();
   helpers.coinList().then(coins => {
     const total = (coins.length < max) ? coins.length : max;
-    let coinsObject = {};
     let coinsArray = [];
-    let top250 = [];
     let completed = 0;
     let coinsWithErrors = [];
-    mapLimit(coins.splice(0, total), limit,
+    eachLimit(coins.splice(0, total), limit,
       (coin, done) => {
-        const beforeFetchTime = new Date().getTime();
+        const beforeCoinTime = new Date().getTime();
         fetchCoin(coin).then(data => {
-          coinsObject[data.id] = data;
           coinsArray[data.coingecko_rank-1] = data;
-          if (data.coingecko_rank <=250) {
-            top250[data.coingecko_rank-1] = data;
-          }
-          const afterFetchTime = new Date().getTime();
-          const fetchTime = afterFetchTime - beforeFetchTime;
-          const msDelay = (fetchTime > 900) ? 0 : 900 - fetchTime;
-          setTimeout(()=>{
-            completed = completed + 1;
-            const progress = (completed / total * 100).toFixed(2);
-            const now = new Date().getTime();
-            const timer = ((now - start)/1000).toFixed(1);
-            console.log(
-              progress + '%',
-              timer + 's,',
-              coin.symbol, '-',
-              coin.name,
-              'time:', fetchTime, 'ms,',
-              'delay:', msDelay, 'ms,',
-            );
-            done(null, data);
-          }, msDelay);
+          const coinPath = path.join('coins', data.id);
+          uploadDataFiles(coinPath, data).then(()=>{
+            const afterCoinTime = new Date().getTime();
+            const coinTime = afterCoinTime - beforeCoinTime;
+            const msDelay = (coinTime > msMinimumTime) ? 0 : msMinimumTime - coinTime;
+            setTimeout(()=>{
+              completed = completed + 1;
+              const progress = (completed / total * 100).toFixed(2);
+              const now = new Date().getTime();
+              const timer = ((now - start)/1000).toFixed(1);
+              console.log(
+                progress + '%',
+                timer + 's,',
+                coin.symbol, '-',
+                coin.name,
+                'time:', coinTime, 'ms,',
+                'delay:', msDelay, 'ms,',
+              );
+              done(null, data);
+            }, msDelay);
+          })
         }).catch((error) => {
           coinsWithErrors.push(coin.id);
-          console.log(error);
+          console.error(error);
           done(null, {});
         });
       },
       (error, results) => {
         if (error) {
-          console.log(error); reject(error);
+          console.error(error); reject(error);
         } else {
           if (coinsWithErrors.length === 0) {
-            writeFileFromData('object', coinsObject).then(()=>{
-              writeFileFromData('array', coinsArray).then(()=>{
-                writeFileFromData('top250', top250).then(()=>{
-                  console.log(completed + ' coins updated!');
-                  console.timeEnd('fetchAllScores()');
-                  resolve();
-                }).catch((error) => {console.log(error); reject(error)});
-              }).catch((error) => {console.log(error); reject(error)});
-            }).catch((error) => {console.log(error); reject(error)});
+            uploadDataFiles('coins', coinsArray).then(()=>{
+              console.log(completed + ' coins updated!');
+              console.timeEnd('fetchAllScores()');
+              resolve();
+            }).catch((error) => {console.error(error); reject(error)});
           } else {
-            console.log(coinsWithErrors);
+            console.error(coinsWithErrors);
             reject('Fetching coins had errors and had to stop.')
           }
         }
@@ -133,22 +153,4 @@ const fetchAllScores = (max=4000, limit=8) => new Promise((resolve, reject) => {
   });
 });
 
-const fetchAvailableDates = (type='array') => new Promise((resolve, reject) => {
-  const objectPath = path.join(basePath, type);
-  fs.readdir(objectPath, (error, filenames) => {
-    if (error) {console.log(error); reject(error);}
-    const dates = filenames.filter(filename => filename.match('.json'))
-    .map(filename => filename.replace('.json',''));
-    const datesString = JSON.stringify(dates, null, 2);
-    const datesFilePath = path.join(basePath, 'available-dates.json');
-    fs.writeFile(datesFilePath, datesString, 'utf8', (_error) => {
-      if (_error) {console.log(_error); reject(_error);}
-      console.log(datesString);
-      resolve();
-    });
-  });
-});
-
-fetchAllScores().then(()=> {
-  fetchAvailableDates();
-});
+fetchAllScores();
