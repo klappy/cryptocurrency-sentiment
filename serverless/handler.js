@@ -27,18 +27,6 @@ module.exports.dequeueCoinBatch = (event, context, callback) => {
   });
 };
 
-module.exports.saveCoin = (event, context, callback) => {
-  helpers.saveCoin(event.id)
-  .then(data => {
-    callback(null, data);
-    _return(200, 'Success: saveCoin()', event, data);
-  })
-  .catch(error => {
-    callback(error);
-    _return(500, 'Error: saveCoin()', event, error);
-  });
-};
-
 module.exports.rollupCoins = (event, context, callback) => {
   helpers.rollupCoins().then(data => {
     callback(null, data);

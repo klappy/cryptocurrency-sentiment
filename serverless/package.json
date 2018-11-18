@@ -10,8 +10,9 @@
     "promise-request-retry": "^1.0.1"
   },
   "scripts": {
-    "build": "npm i",
-    "predeploy": "npm run build",
-    "deploy": "serverless deploy -v"
+    "predeploy": "npm i",
+    "deploy": "serverless deploy -v",
+    "queueCoins": "serverless invoke --function queueCoins",
+    "rollupCoins": "serverless invoke --function rollupCoins"
   }
 }
