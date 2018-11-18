@@ -55,7 +55,7 @@ const filterCoinData = (coin) => {
     return  value || 0;
   });
   return coinData;
-}
+};
 
 const getDataByDate = (date) => new Promise((resolve, reject) => {
   let coinsUri = 'coins';
@@ -67,7 +67,7 @@ const getDataByDate = (date) => new Promise((resolve, reject) => {
 
 const uriFromDate = (date) => {
   return href + path.join(baseUri, 'history', date, 'coins' );
-}
+};
 
 const uriExists = (uri) => new Promise((resolve) => {
   request({uri: uri, method: 'HEAD', resolveWithFullResponse: true})

@@ -1,0 +1,17 @@
+{
+  "name": "coingecko-sentiment-serverless",
+  "homepage": "https://klappy.github.io/cryptocurrency-sentiment",
+  "version": "0.1.0",
+  "private": false,
+  "dependencies": {
+    "async": "^2.6.1",
+    "aws-sdk": "^2.356.0",
+    "moment": "^2.22.2",
+    "promise-request-retry": "^1.0.1"
+  },
+  "scripts": {
+    "build": "npm i",
+    "predeploy": "npm run build",
+    "deploy": "serverless deploy -v"
+  }
+}
