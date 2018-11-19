@@ -27,10 +27,10 @@ class CoinsTableContainer extends React.Component {
   }
 
   componentDidMount() {
-    CoinsTableHelpers.availableDates().then(_dates => {
-      const dates = _dates.reverse();
+    CoinsTableHelpers.availableDates().then(dates => {
+      dates.reverse();
       const date = dates[0];
-      CoinsTableHelpers.coinTableDataByDate()
+      CoinsTableHelpers.coinTableDataByDate(date)
       .then(({columns, data, coins}) => {
         this.setState({
           dates: dates,

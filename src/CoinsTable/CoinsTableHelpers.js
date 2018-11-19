@@ -1,26 +1,25 @@
 import path from 'path';
 import moment from 'moment';
-import {each} from 'async';
 const request = require('request-promise');
 
 const href = 'http://d28x6bs9o8a1xt.cloudfront.net/';
 const baseUri = 'api/v1/';
 
-export const availableDates = () => new Promise((resolve, reject) => {
-  let dates = [];
-  const days = [0,1];
-  each(days,
-    (day, done) => {
-      const date = moment().subtract(day, 'days').format('YYYY-MM-DD');
-      uriExists(uriFromDate(date))
-      .then((exists) => {
-        if (exists) dates.push(date);
-        done();
+export const availableDates = (day=0, dates=[]) => new Promise((resolve, reject) => {
+  const date = moment().subtract(day, 'days').format('YYYY-MM-DD');
+  uriExists(uriFromDate(date))
+  .then(exists => {
+    if (exists) {
+      dates.push(date);
+      availableDates(day + 1, dates)
+      .then(dates => {
+        resolve(dates);
       });
-    },
-    (error) => { console.log(error); reject(error); }
-  );
-  resolve(dates);
+    } else {
+      resolve(dates);
+    }
+  })
+  .catch(error => resolve(dates));
 });
 
 export const coinTableDataByDate = (date) => new Promise((resolve, reject) => {
@@ -46,6 +45,7 @@ const columnData = {
 };
 
 const filterCoinData = (coin) => {
+  if (!coin) return [];
   let coinData = Object.keys(columnData).map(columnKey => {
     let value = '';
     if (coin[columnKey]) value = coin[columnKey];
