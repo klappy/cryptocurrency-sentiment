@@ -147,13 +147,8 @@ const s3upload = (filepath, fileContents) => new Promise((resolve, reject) => {
 const uploadDataFiles = (resourcePath, filedata) => new Promise((resolve, reject) => {
   const date = moment().tz('America/New_York').format('YYYY-MM-DD');
   const dateFilepath = path.join(baseDir, 'history', date, resourcePath);
-  const latestFilepath = path.join(baseDir, resourcePath);
-  s3upload(latestFilepath, filedata)
-  .then(response => {
-    s3upload(dateFilepath, filedata)
-    .then(_response => resolve(JSON.stringify(response) + '; ' + JSON.stringify(_response)))
-    .catch(_error => reject(_error));
-  })
+  s3upload(dateFilepath, filedata)
+  .then(response => resolve(response))
   .catch(error => reject(error));
 });
 
