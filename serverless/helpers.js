@@ -1,5 +1,5 @@
 var path = require('path');
-var moment = require('moment');
+var moment = require('moment-timezone');
 var request = require('promise-request-retry');
 var eachLimit = require('async/eachLimit');
 var AWS = require('aws-sdk');
@@ -79,50 +79,47 @@ module.exports.saveCoin = (id) => new Promise((resolve, reject) => {
 
 module.exports.rollupCoins = (limit=200) => new Promise((resolve, reject) => {
   console.time('rollupCoins()');
-  const start = new Date().getTime();
   helpers.coinList().then(coins => {
-    const total = coins.length;
     let coinsArray = [];
     let completed = 0;
     let coinsWithErrors = [];
     eachLimit(coins, limit,
       (coin, done) => {
-        const beforeCoinTime = new Date().getTime();
         fetchCoin(coin.id).then(data => {
-          coinsArray[data.coingecko_rank-1] = data;
-          const afterCoinTime = new Date().getTime();
-          const coinTime = afterCoinTime - beforeCoinTime;
-          completed = completed + 1;
-          const progress = (completed / total * 100).toFixed(2);
-          const now = new Date().getTime();
-          const timer = ((now - start)/1000).toFixed(1);
-          console.log(
-            progress + '%',
-            timer + 's,',
-            coin.symbol, '-',
-            coin.name,
-            'time:', coinTime, 'ms,',
-          );
-          done(null, data);
+          if (data) {
+            coinsArray[data.coingecko_rank-1] = data;
+            completed = completed + 1;
+            done(null);
+          } else {
+            coinsWithErrors.push(coin.id);
+            done(coin.id + ' was empty!')
+          }
         }).catch((error) => {
           coinsWithErrors.push(coin.id);
-          console.error(error);
-          done(null, {});
+          console.log(error);
+          done(error);
         });
       },
       (error, results) => {
-        if (error) {
-          console.error(error); reject(error);
+        const emptyCoin = coinsArray.indexOf(null);
+        if (error || emptyCoin > -1) {
+          console.timeEnd('rollupCoins()');
+          console.log('There was an error!', error);
+          console.log('Empty Coin Index: ', emptyCoin);
+          console.log(coinsWithErrors);
+          reject(error);
         } else {
           if (coinsWithErrors.length === 0) {
             uploadDataFiles('coins', coinsArray)
             .then(()=>{
-              const message = completed + ' coins updated!';
               console.timeEnd('rollupCoins()');
+              const message = completed + ' coins updated!';
+              console.log(message);
               resolve(message);
             }).catch((error) => {console.error(error); reject(error)});
           } else {
-            console.error(coinsWithErrors);
+            console.timeEnd('rollupCoins()');
+            console.log(coinsWithErrors);
             reject('Fetching coins had errors and had to stop.')
           }
         }
@@ -148,7 +145,7 @@ const s3upload = (filepath, fileContents) => new Promise((resolve, reject) => {
 });
 
 const uploadDataFiles = (resourcePath, filedata) => new Promise((resolve, reject) => {
-  const date = moment().format('YYYY-MM-DD');
+  const date = moment().tz('America/New_York').format('YYYY-MM-DD');
   const dateFilepath = path.join(baseDir, 'history', date, resourcePath);
   const latestFilepath = path.join(baseDir, resourcePath);
   s3upload(latestFilepath, filedata)

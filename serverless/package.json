@@ -6,7 +6,7 @@
   "dependencies": {
     "async": "^2.6.1",
     "aws-sdk": "^2.356.0",
-    "moment": "^2.22.2",
+    "moment-timezone": "^0.5.23",
     "promise-request-retry": "^1.0.1"
   },
   "scripts": {
